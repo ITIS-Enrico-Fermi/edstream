@@ -11,7 +11,7 @@ class ProtocolHandler:
         self.serial_port: serial.Serial = serial_port
     
     def send_start_byte(self) -> None:
-        pass
+        pass 
 
     def send_stop_byte(self) -> None:
         pass
@@ -32,22 +32,18 @@ class ProtocolHandler:
 
 
 def main(serial_port_name: str, show: bool) -> None:
-    stdin_img = BytesIO(sys.stdin.buffer.read())
+    stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
     if show:
-        im = Image.open(stdin_img)
+        im = Image.open(stdin_img_bytes)
         im.show()
     with serial.Serial(port=serial_port_name, baudrate=115200, bytesize=8, parity='N', stopbits=1) as serial_port:
         handler: ProtocolHandler = ProtocolHandler(serial_port)
-        # handler.send(sys.stdin)
-        stdin_img = BytesIO(sys.stdin.buffer.read())
-        im = Image.open(stdin_img)
-        im.show()
-
+        handler.send(stdin_img_bytes)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', help='Serial port name', type=str, default=SERIAL_PORT_NAME)
-    parser.add_argument('-s', '--show', help='Show piped image', type=bool, default=False)
+    parser.add_argument('-s', '--show', help='Show piped image', default=False, action='store_true')
     args = parser.parse_args()
     main(args.port, args.show)
 
