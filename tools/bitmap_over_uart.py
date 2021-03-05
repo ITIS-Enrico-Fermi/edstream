@@ -49,14 +49,18 @@ class ProtocolHandler:
         # print(start_byte)
         self.serial_port.write(start_byte)
 
-    def __send_stop_byte(self) -> None:
+    def __send_stop_byte(self) -> None:  # TODO
         """
         Send protocol's stop byte: 0x00
         """
-        pass
+        self.serial_port.write(bytes(0x00))
 
     def __check_ack(self) -> bool:
-        pass
+        """
+        Check if the embedded device acknowledged start or stop byte
+        ACK byte: 0xff
+        """
+        return (self.serial_port.read() == b'\xff')
 
     def send_bitmap(self, buf: bytes) -> None:
         """
