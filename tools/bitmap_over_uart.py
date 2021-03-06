@@ -1,3 +1,9 @@
+"""
+Send bitmap over UART
+"""
+
+__authors__ = "5H wild nerds"
+
 import serial
 import sys
 import argparse
