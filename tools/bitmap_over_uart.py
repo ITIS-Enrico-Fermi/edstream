@@ -14,11 +14,11 @@ class BytePosition(IntEnum):
     SAVE = 0
     ZIPPED = auto()
     SET_RR = auto()
-    RESERVED_FOR_FUTURE_USE_1 = auto()
-    RESERVED_FOR_FUTURE_USE_2 = auto()
-    RESERVED_FOR_FUTURE_USE_3 = auto()
     START = auto()
     CLEAR = auto()
+    SIZE = auto()
+    RESERVED_FOR_FUTURE_USE = auto()
+    QUERY = auto()
 
 class ProtocolHandler:
     def __init__(self, serial_port: serial.Serial) -> None:
@@ -30,7 +30,7 @@ class ProtocolHandler:
         """
         self.serial_port: serial.Serial = serial_port
     
-    def __send_start_byte(self, clear: bool = False, start: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False) -> None:
+    def __send_start_byte(self, clear: bool = False, start: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False, size_128x64: bool = False, query: bool = False) -> None:
         """
         Compose and send protocol's start byte. Parameters are sorted from the one with the highest priority to the one with the lowest priority
         :param bool clear: Clear embedded device's frame buffer. Highest priority, mutual exclusion. If it is equal to True no payload expected
@@ -38,8 +38,12 @@ class ProtocolHandler:
         :param bool set_rr: Set refresh-rate. Mutual exclusion. If equals to True 1 byte of payload expected; the payload must represent the refresh rate as ms(/portTICK_MS)
         :param bool zipped: If True the embedded device will unzip the frame
         :param bool save: Does the frame belong to an animation? If True the frame is saved in the frame buffer, otherwise is displayed immediately
+        :param bool size_128x64: Set frame size. True => 128x64. False => 128x32
+        :param bool query: Communicate to the embedded device if the master (PC) is writing or reading a frame
         """
         sb: int = 0x00 \
+                | ((0x01 << int(BytePosition.QUERY)) if query else 0x00) \
+                | ((0x01 << int(BytePosition.SIZE)) if size_128x64 else 0x00) \
                 | ((0x01 << int(BytePosition.CLEAR)) if clear else 0x00) \
                 | ((0x01 << int(BytePosition.START)) if start else 0x00) \
                 | ((0x01 << int(BytePosition.SET_RR)) if set_rr else 0x00) \
