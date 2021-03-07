@@ -29,15 +29,18 @@ For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
 
 ### Set refresh rate
 ![Set refresh rate](SetRefreshRate.svg)
+<br>
 With _set_rr_ bit set to 1
 1 byte payload expected
 
 ### Clear framebuffer
 ![Cleare framebuffer](Clear.svg)
+<br>
 With _clear_ bit set to 1
 No payload expected
 
 ### Start animation
 ![Start animation](Start.svg)
+<br>
 With _start_ bit set to 1
 No payload expected
