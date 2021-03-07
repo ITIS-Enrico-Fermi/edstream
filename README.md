@@ -5,11 +5,17 @@ Bitmap streaming facility for ESP32 and OLED displays.
 
 Clone this project into _lib_ folder inside your PIO workspace
 ```
+cd lib
 git clone https://github.com/ITIS-Enrico-Fermi/edstream
+cd ..
 ```
 
-Install dependencies for Python tools
+Clone _ssd1306_ library into _components_ folder inside your PIO workspace
 ```
-python3 -m pip install -r requirements.txt
+mkdir components && cd components
+git clone https://github.com/lexus2k/ssd1306
+cd ..
 ```
+
+For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
 
