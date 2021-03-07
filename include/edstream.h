@@ -30,6 +30,8 @@
 #define QUERY_SUPPORTED_FX          0x02
 #define QUERY_BUFFER_SIZE           0x03
 
+#define RESPONSE_ACK                0xff
+
 struct eds_display {
     
 };
@@ -47,7 +49,6 @@ bool eds_query_animation_status();
 typedef void(*eds_zip_function_t)(uint8_t *src, uint8_t *dst, int *pl_size);
 void eds_zip_function_set(eds_zip_function_t f);
 void eds_zip_deflate(uint8_t *src, uint8_t *dst, int *pl_size);
-eds_zip_function_t eds_zip_function = eds_zip_deflate;
 
 /*
  *  Device functions

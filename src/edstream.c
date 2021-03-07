@@ -4,6 +4,7 @@
 #include "edstream_hal.h"
 
 static bool is_animation_running = false;
+static eds_zip_function_t eds_zip_function = eds_zip_deflate;
 
 /*
  *  @brief Sends a frame to display device (that controls the display)
@@ -91,6 +92,7 @@ int eds_decode_message(uint8_t *payload, int n) {
                 received_frame_bytes = 0;
                 i++;
             }
+            eds_hal_send_byte(RESPONSE_ACK);
             break;
 
         case FSM_QUERY:
