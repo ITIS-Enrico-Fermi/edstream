@@ -35,3 +35,8 @@ int eds_hal_send(uint8_t *src, int n) {
 int eds_hal_recv(uint8_t *dst, int n) {
     return fread(dst, sizeof(uint8_t), n, stdin);
 }
+
+int eds_hal_display_show(uint8_t *frame) {
+    ssd1306_drawBitmap(0, 0, 128, 64, frame);
+    return 0;
+}
