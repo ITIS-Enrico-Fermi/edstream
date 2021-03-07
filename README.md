@@ -21,4 +21,5 @@ For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
 
 ## Protocol
 Start byte
+
 ![Start byte](Protocol.png)
