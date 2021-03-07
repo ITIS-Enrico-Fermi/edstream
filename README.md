@@ -30,23 +30,23 @@ cp lib/edstream/sdkconfig .
 ## Protocol
 
 ### Start byte
-![Start byte](Protocol.svg)
+![Start byte](diagrams/Protocol.svg)
 
 ### Send bitmap
-![Send bitmap](SendBitmap.svg)
+![Send bitmap](diagrams/SendBitmap.svg)
 
 ### Set refresh rate
-![Set refresh rate](SetRefreshRate.svg)
+![Set refresh rate](diagrams/SetRefreshRate.svg)
 <br> With _set_rr_ bit set to 1
 <br> 1 byte payload expected
 
 ### Clear framebuffer
-![Cleare framebuffer](Clear.svg)
+![Cleare framebuffer](diagrams/Clear.svg)
 <br> With _clear_ bit set to 1
 <br> No payload expected
 
 ### Start animation
-![Start animation](Start.svg)
+![Start animation](diagrams/Start.svg)
 <br> With _start_ bit set to 1
 <br> No payload expected
 
