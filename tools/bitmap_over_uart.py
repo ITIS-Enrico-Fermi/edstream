@@ -108,7 +108,7 @@ class ProtocolHandler:
 
 
 def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool) -> None:
-    if refresh_rate == -1 and not clear and not start_animation:  # These three flags inhibit default behavior. No piped bitmap needed
+    if refresh_rate is None and not clear and not start_animation:  # These three flags inhibit default behavior. No piped bitmap needed
         stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
         if show:
             im = Image.open(stdin_img_bytes)
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--show', help='Show piped image (on the PC) before sending', default=False, action='store_true')
     parser.add_argument('--start-animation', help='Start animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
 
-    parser.add_argument('--refresh-rate', help='Set animation refresh rate. Inhibit default behavior (send bitmap). No piped image', type=int, default=-1)  # rr = -1 -> skip set_rr flag (false)
+    parser.add_argument('--refresh-rate', help='Set animation refresh rate. Inhibit default behavior (send bitmap). No piped image', type=int, default=None)  # rr = None -> skip set_rr flag (false)
     
     parser.add_argument('--clear', help='Clear frame buffer stored on the embedded device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     args = parser.parse_args()
