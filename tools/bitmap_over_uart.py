@@ -112,7 +112,7 @@ def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate:
         stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
         if show:
             im = Image.open(stdin_img_bytes)
-        im.show()
+            im.show()
     with serial.Serial(port=serial_port_name, baudrate=115200, bytesize=8, parity='N', stopbits=1) as serial_port:
         handler: ProtocolHandler = ProtocolHandler(serial_port)
         if clear:
