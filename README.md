@@ -5,14 +5,19 @@ Bitmap streaming facility for ESP32 and OLED displays.
 
 Clone this project into _lib_ folder inside your PIO workspace
 ```
+cd lib
 git clone https://github.com/ITIS-Enrico-Fermi/edstream
+cd ..
 ```
 
-Install dependencies for Python tools
+Clone _ssd1306_ library into _components_ folder inside your PIO workspace
 ```
-python3 -m pip install -r requirements.txt
+mkdir components && cd components
+git clone https://github.com/lexus2k/ssd1306
+cd ..
 ```
 
+<<<<<<< HEAD
 Copy PlatformIO configuration for a quick setup
 ```
 cp lib/edstream/platformio.ini .
@@ -21,3 +26,7 @@ cp lib/edstream/platformio.ini .
 ```
 cp lib/edstream/sdkconfig .
 ```
+=======
+For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
+
+>>>>>>> 68c1f4e5c2a90f36fab8912a28570f9333cbb1f2
