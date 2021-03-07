@@ -26,4 +26,3 @@ cp lib/edstream/platformio.ini .
 cp lib/edstream/sdkconfig .
 ```
 For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
-
