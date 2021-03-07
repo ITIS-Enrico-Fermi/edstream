@@ -24,3 +24,14 @@ For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
 ### Start byte
 ![Start byte](Protocol.svg)
 
+### Send bitmap
+![Send bitmap](Send.svg)
+
+### Set refresh rate
+![Set refresh rate](SetRefreshRate.svg)
+
+### Clear framebuffer
+![Cleare framebuffer](Clear.svg)
+
+### Start animation
+![Start animation](Start.svg)
