@@ -30,10 +30,6 @@
 #define QUERY_SUPPORTED_FX          0x02
 #define QUERY_BUFFER_SIZE           0x03
 
-struct eds_display {
-    
-};
-
 /*
  *  Controller functions
  */
