@@ -116,7 +116,7 @@ def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate:
             w: int = img.size[0] * scaling_factor
             h: int = img.size[1] * scaling_factor
             img.resize((w, h), Image.ANTIALIAS).show()
-    with serial.Serial(port=serial_port_name, baudrate=115200, bytesize=8, parity='N', stopbits=1) as serial_port:
+    with serial.Serial(port=serial_port_name, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=3) as serial_port:
         handler: ProtocolHandler = ProtocolHandler(serial_port)
         if clear:
             handler.clear()
