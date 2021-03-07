@@ -31,7 +31,7 @@ int eds_send_frame(uint8_t *frame, bool save, bool zip) {
 }
 
 bool eds_query_animation_status() {
-    uint16_t message = PROTOCOL_QUERY << 16 + QUERY_IS_ANIMATION_RUNNING;
+    uint16_t message = (PROTOCOL_QUERY << 16) + QUERY_IS_ANIMATION_RUNNING;
     eds_hal_send(&message, 2);
 
     eds_hal_recv(&is_animation_running, 1);
