@@ -13,3 +13,11 @@ Install dependencies for Python tools
 python3 -m pip install -r requirements.txt
 ```
 
+Copy PlatformIO configuration for a quick setup
+```
+cp lib/edstream/platformio.ini .
+```
+
+```
+cp lib/edstream/sdkconfig .
+```
