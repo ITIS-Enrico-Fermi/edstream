@@ -109,10 +109,13 @@ class ProtocolHandler:
 
 def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool) -> None:
     if refresh_rate is None and not clear and not start_animation:  # These three flags inhibit default behavior. No piped bitmap needed
-        stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
-        if show:
-            im = Image.open(stdin_img_bytes)
-            im.show()
+        stdin_img_bytes: BytesIO = BytesIO(sys.stdin.buffer.read())
+        if show:  # Show preview
+            img: Image = Image.open(stdin_img_bytes)
+            scaling_factor = 5
+            w: int = img.size[0] * scaling_factor
+            h: int = img.size[1] * scaling_factor
+            img.resize((w, h), Image.ANTIALIAS).show()
     with serial.Serial(port=serial_port_name, baudrate=115200, bytesize=8, parity='N', stopbits=1) as serial_port:
         handler: ProtocolHandler = ProtocolHandler(serial_port)
         if clear:
