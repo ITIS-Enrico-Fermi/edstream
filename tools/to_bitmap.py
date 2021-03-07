@@ -1,5 +1,5 @@
 """
-Convert images to bitmap C-like array, after some pre-processing (grayscale and resize)
+Convert images to bitmap, after some pre-processing (grayscale and resize)
 Input: stdin - pipe the image into this script
 Output: stdout - C-like array of bytes
 """
@@ -35,9 +35,9 @@ def main() -> None:
     stdout_img_bytes: bytes = img_byte_array.getvalue()
 
     """
-    Printing the array of bytes as C-like array
+    Writing the array of bytes to stdout
     """
-    print([hex(byte) for byte in stdout_img_bytes])
+    sys.stdout.buffer.write(stdout_img_bytes)
 
 if __name__ == "__main__":
     main()
