@@ -17,8 +17,12 @@ git clone https://github.com/lexus2k/ssd1306
 cd ..
 ```
 
-For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
+Copy PlatformIO configuration for a quick setup
+```
+cp lib/edstream/platformio.ini .
+```
 
+<<<<<<< HEAD
 ## Protocol
 
 ### Start byte
@@ -41,3 +45,9 @@ For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
 ![Start animation](Start.svg)
 <br> With _start_ bit set to 1
 <br> No payload expected
+=======
+```
+cp lib/edstream/sdkconfig .
+```
+For more information see: [https://github.com/lexus2k/ssd1306#setting-up]()
+>>>>>>> 9ffc8311901d8c59a52382b625a764ccd0b5a919

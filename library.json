@@ -1,0 +1,14 @@
+{
+    "name": "edstream",
+    "version": "1.0.0",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/ITIS-Enrico-Fermi/edstream"
+    },
+    "description": "Embedded Display Streaming",
+    "keywords": ["ssd1306", "oled"],
+    "build": {
+        "srcDir": "src"
+    }
+}
