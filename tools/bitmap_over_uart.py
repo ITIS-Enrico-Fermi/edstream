@@ -89,7 +89,7 @@ class ProtocolHandler:
         """
         self.__send_start_byte(set_rr = True)
         assert self.__check_ack()
-        self.serial_port.write(byte([rr]))
+        self.serial_port.write(bytes([rr]))
         assert self.__check_ack()
 
     def start(self) -> None:
@@ -122,7 +122,7 @@ def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate:
             handler.clear()
         elif start_animation:
             handler.start()
-        elif refresh_rate != -1:
+        elif refresh_rate != None:
             handler.set_refresh_rate(refresh_rate)
         else:  # Default behavior -> send bitmap
             handler.send_bitmap(stdin_img_bytes.getvalue())
