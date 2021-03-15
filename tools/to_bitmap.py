@@ -14,7 +14,7 @@ def main() -> None:
     """
     Get input image as raw bytes
     """
-    stdin_img_bytes: ByteIO = BytesIO(sys.stdin.buffer.read())
+    stdin_img_bytes: BytesIO = BytesIO(sys.stdin.buffer.read())
     
     """
     Processing
