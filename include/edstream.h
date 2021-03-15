@@ -32,10 +32,6 @@
 
 #define RESPONSE_ACK                0xff
 
-struct eds_display {
-    
-};
-
 /*
  *  Controller functions
  */
