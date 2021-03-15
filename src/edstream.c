@@ -1,5 +1,7 @@
 #include <string.h>
 
+#include "esp_log.h"
+
 #include "edstream.h"
 #include "edstream_hal.h"
 
@@ -75,7 +77,10 @@ int eds_decode_message(uint8_t *payload, int n) {
     int i = 0;  //consumed bytes
     static int received_frame_bytes = 0;
 
+    ESP_LOGI("FSM", "Called FSM with %d bytes of payload", n);
+
     while(i < n) {
+        ESP_LOGD("FSM", "Current status: %d", eds_fsm_state);
         switch(eds_fsm_state) {
         case FSM_WAIT_MESSAGE:
             eds_fsm_state = FSM_NEW_MESSAGE;
@@ -92,6 +97,7 @@ int eds_decode_message(uint8_t *payload, int n) {
                 received_frame_bytes = 0;
                 i++;
             }
+            ESP_LOGD("FSM", "Payload is %x and next state will be %d\n", payload[i-1], eds_fsm_state);
             eds_hal_send_byte(RESPONSE_ACK);
             break;
 
@@ -115,6 +121,7 @@ int eds_decode_message(uint8_t *payload, int n) {
                 eds_hal_display_show(current_frame);
                 eds_fsm_state = FSM_WAIT_MESSAGE;
             }
+            ESP_LOGD("FSM", "Received frame bytes: %d", received_frame_bytes);
             break;
 
         default:
