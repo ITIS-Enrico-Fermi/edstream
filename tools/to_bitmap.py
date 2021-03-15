@@ -10,24 +10,24 @@ import sys
 from io import BytesIO
 from PIL import Image
 
-def main() -> None:
+def main():
     """
     Get input image as raw bytes
     """
-    stdin_img_bytes: BytesIO = BytesIO(sys.stdin.buffer.read())
+    stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
     
     """
     Processing
     """
-    img: Image = Image.open(stdin_img_bytes)
-    img: Image = img.convert('LA')  # Convert to grayscale
-    img: Image = img.resize((128, 64), Image.LANCZOS)  # Resize to 128x64 or 128x62 [pixels]. Lanczos interpolation for best result
+    img = Image.open(stdin_img_bytes)
+    img = img.resize((128, 64), Image.LANCZOS)  # Resize to 128x64 or 128x62 [pixels]. Lanczos interpolation for best result
+    img = img.convert('1')  # Convert to 1 bit black/white
     
     """
     Saving image into ByteIO object
     """
-    img_byte_array: BytesIO = BytesIO()
-    img.save(img_byte_array, format = 'png')
+    img_byte_array = BytesIO()
+    img.save(img_byte_array, format='bmp')
     
     """
     Getting bytes (array of bytes)
