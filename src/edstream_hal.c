@@ -10,33 +10,34 @@
 #include <stdio.h>
 #include "ssd1306.h"
 
-static struct eds_hal_config configuration;
-
-void eds_hal_init(struct eds_hal_config *config) {
-    configuration = *config;
-
+void eds_hal_init(const struct eds_hal_config *config)
+{
     ssd1306_platform_i2cConfig_t cfg = {
-        .sda = configuration.sda_pin,
-        .scl = configuration.scl_pin
+        .sda = config->i2c_pins.sda_pin,
+        .scl = config->i2c_pins.scl_pin
     };
-    ssd1306_platform_i2cInit(configuration.i2c, 0, &cfg);
+    ssd1306_platform_i2cInit(config->i2c, 0, &cfg);
 
     //UART configuration is not handled at this time.
 }
 
-int eds_hal_send_byte(uint8_t x) {
+int eds_hal_send_byte(u8 x)
+{
     return putchar(x);
 }
 
-int eds_hal_send(uint8_t *src, int n) {
+int eds_hal_send(const u8 *src, u16 n)
+{
     return fwrite(src, sizeof(uint8_t), n, stdout);
 }
 
-int eds_hal_recv(uint8_t *dst, int n) {
+int eds_hal_recv(u8 *dst, u16 n)
+{
     return fread(dst, sizeof(uint8_t), n, stdin);
 }
 
-int eds_hal_display_show(uint8_t *frame) {
-    ssd1306_drawBitmap(0, 0, 128, 64, frame);
+int eds_hal_display_show(const u8 *frame)
+{
+    ssd1306_drawBitmap(0, 0, OLED_W, OLED_H, frame);
     return 0;
 }

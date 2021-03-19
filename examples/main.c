@@ -4,8 +4,7 @@
 #include "driver/gpio.h"
 
 #include "driver/i2c.h"
-#include "ssd1306_hal/io.h"
-#include "ssd1306.h"
+#include <ssd1306.h>
 
 #include "edstream.h"
 #include "edstream_hal.h"

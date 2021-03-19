@@ -1,9 +1,4 @@
-#include <string.h>
-
-#include "esp_log.h"
-
 #include "edstream.h"
-#include "edstream_hal.h"
 
 static bool is_animation_running = false;
 static eds_zip_function_t eds_zip_function = eds_zip_deflate;
@@ -17,7 +12,8 @@ static eds_zip_function_t eds_zip_function = eds_zip_deflate;
  * 
  *  You can provide a Deflate function with eds_zip_function_set()
  */
-int eds_send_frame(uint8_t *frame, bool save, bool zip) {
+int eds_send_frame(const u8 *frame, bool save, bool zip)
+{
     uint8_t message[1025];
     message[0] =
         save    ? PROTOCOL_SAVE_FRAME   : 0 |
@@ -33,8 +29,9 @@ int eds_send_frame(uint8_t *frame, bool save, bool zip) {
     return 0;
 }
 
-bool eds_query_animation_status() {
-    uint16_t message = (PROTOCOL_QUERY << 16) + QUERY_IS_ANIMATION_RUNNING;
+bool eds_query_animation_status()
+{
+    u16 message = (PROTOCOL_QUERY << 16) + QUERY_IS_ANIMATION_RUNNING;
     eds_hal_send(&message, 2);
 
     eds_hal_recv(&is_animation_running, 1);
@@ -42,16 +39,16 @@ bool eds_query_animation_status() {
     return is_animation_running;
 }
 
-int eds_start_animation() {
-
+int eds_start_animation()
+{
     if(!is_animation_running) {
         eds_hal_send(PROTOCOL_TOGGLE_ANIMATION, 1);
         is_animation_running = true;
     }
     return 0;
 }
-int eds_stop_animation() {
-
+int eds_stop_animation()
+{
     if(is_animation_running) {
         eds_hal_send(PROTOCOL_TOGGLE_ANIMATION, 1);
         is_animation_running = false;
@@ -68,12 +65,13 @@ enum eds_fsm_states {
     FSM_MAX_STATES
 };
 static int eds_fsm_state = FSM_WAIT_MESSAGE;
-static uint8_t current_frame[1024];
+static u8 current_frame[1024];
 
 /*
  *  @return 0 on no error
  */
-int eds_decode_message(uint8_t *payload, int n) {
+int eds_decode_message(const u8 *payload, int n)
+{
     int i = 0;  //consumed bytes
     static int received_frame_bytes = 0;
 
