@@ -120,6 +120,7 @@ int eds_decode_message(uint8_t *payload, int n) {
             if(received_frame_bytes == 1024) {
                 eds_hal_display_show(current_frame);
                 eds_fsm_state = FSM_WAIT_MESSAGE;
+                eds_hal_send_byte(RESPONSE_ACK);
             }
             ESP_LOGD("FSM", "Received frame bytes: %d", received_frame_bytes);
             break;
