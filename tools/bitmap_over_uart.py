@@ -10,6 +10,7 @@ import argparse
 from io import BytesIO
 from PIL import Image
 from enum import IntEnum, auto
+from time import sleep
 
 SERIAL_PORT_NAME: str = "/dev/ttyUSB0"  # Default value
 
@@ -77,10 +78,11 @@ class ProtocolHandler:
         Send a series of bytes to the embedded device. Store these bytes and save them into the frame buffer
         :param bytes buf: bytes of which the bitmap image is made up of
         """
-        self.__send_start_byte(zipped = True, save = True, size_128x64 = True)
-        assert self.__check_ack()
+        #self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
+        self.serial_port.write(bytes(1))
+        #assert self.__check_ack()
         self.serial_port.write(buf)
-        assert self.__check_ack()
+        #assert self.__check_ack()
 
     def set_refresh_rate(self, rr: int) -> None:
         """
@@ -107,35 +109,39 @@ class ProtocolHandler:
         assert self.__check_ack()
 
 
-def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool) -> None:
-    if refresh_rate is None and not clear and not start_animation:  # These three flags inhibit default behavior. No piped bitmap needed
-        stdin_img_bytes: BytesIO = BytesIO(sys.stdin.buffer.read())
-        if show:  # Show preview
-            img: Image = Image.open(stdin_img_bytes)
-            scaling_factor = 5
-            w: int = img.size[0] * scaling_factor
-            h: int = img.size[1] * scaling_factor
-            img.resize((w, h), Image.ANTIALIAS).show()
-    with serial.Serial(port=serial_port_name, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=3) as serial_port:
-        handler: ProtocolHandler = ProtocolHandler(serial_port)
+def main(port: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
+    with serial.Serial(port, baudrate=115200, bytesize=8) as uart:
+        handler = ProtocolHandler(uart)
         if clear:
             handler.clear()
         elif start_animation:
             handler.start()
-        elif refresh_rate != -1:
+        elif refresh_rate:
             handler.set_refresh_rate(refresh_rate)
-        else:  # Default behavior -> send bitmap
-            handler.send_bitmap(stdin_img_bytes.getvalue())
+        else:
+            if use_stdin:
+                stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
+            img = Image.open(stdin_img_bytes if use_stdin else "image.bmp")
+
+            if show:  # Show preview
+                scaling_factor = 5
+                w: int = img.size[0] * scaling_factor
+                h: int = img.size[1] * scaling_factor
+                img.resize((w, h), Image.ANTIALIAS).show()
+
+            handler.send_bitmap(img.tobytes())
+            
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', help='Serial port name', type=str, default=SERIAL_PORT_NAME)
     parser.add_argument('-s', '--show', help='Show piped image (on the PC) before sending', default=False, action='store_true')
     parser.add_argument('--start-animation', help='Start animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
+    parser.add_argument('--nostdin', help="Open image.bmp instead of stdin", default=True, action='store_false')
 
     parser.add_argument('--refresh-rate', help='Set animation refresh rate. Inhibit default behavior (send bitmap). No piped image', type=int, default=None)  # rr = None -> skip set_rr flag (false)
     
     parser.add_argument('--clear', help='Clear frame buffer stored on the embedded device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     args = parser.parse_args()
-    main(args.port, args.show, args.start_animation, args.refresh_rate, args.clear)
+    main(args.port, args.show, args.start_animation, args.refresh_rate, args.clear, args.nostdin)
 
