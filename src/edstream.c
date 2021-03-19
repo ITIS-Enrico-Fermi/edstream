@@ -80,7 +80,6 @@ int eds_decode_message(uint8_t *payload, int n) {
     ESP_LOGI("FSM", "Called FSM with %d bytes of payload", n);
 
     while(i < n) {
-        ESP_LOGD("FSM", "Current status: %d", eds_fsm_state);
         switch(eds_fsm_state) {
         case FSM_WAIT_MESSAGE:
             eds_fsm_state = FSM_NEW_MESSAGE;
