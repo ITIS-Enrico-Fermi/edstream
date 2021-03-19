@@ -42,6 +42,6 @@ int eds_hal_recv(uint8_t *dst, int n) {
 }
 
 int eds_hal_display_show(uint8_t *frame) {
-    ssd1306_drawBitmap(0, 0, 128, 64, frame);
+    ssd1306_drawBuffer(0, 0, 128, 64, frame);
     return 0;
 }
