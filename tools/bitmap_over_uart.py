@@ -121,7 +121,7 @@ def main(port: str, show: bool, start_animation: bool, refresh_rate: int, clear:
         else:
             if use_stdin:
                 stdin_img_bytes = BytesIO(sys.stdin.buffer.read())
-            img = Image.open(stdin_img_bytes if use_stdin else "image.bmp")
+            img = Image.open(stdin_img_bytes if use_stdin else "lib/edstream/tools/image.bmp")
 
             if show:  # Show preview
                 scaling_factor = 5
