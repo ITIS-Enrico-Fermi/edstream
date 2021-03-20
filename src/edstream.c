@@ -56,6 +56,7 @@ void eds_show_animation_task(void* pvParameters)
         local_frame_counter %= framebuffer_size;
         vTaskDelay(refresh_rate/portTICK_PERIOD_MS);
     }
+    ESP_LOGD("SHOW", "Exiting while loop of show_animation_task");
     vTaskDelete(NULL);
 }
 
@@ -64,8 +65,8 @@ int eds_start_animation()
     if(!is_animation_running) {
         ESP_LOGD("START", "Start automation");
         // eds_hal_send(PROTOCOL_TOGGLE_ANIMATION, 1);
-        xTaskCreate(eds_show_animation_task, "show_animation_task", 8192, NULL, 5, NULL);  // TODO: Guru meditation error
         is_animation_running = true;
+        xTaskCreate(eds_show_animation_task, "show_animation_task", 8192, NULL, 5, NULL);  // TODO: Guru meditation error
     }
     return 0;
 }
@@ -134,7 +135,6 @@ int eds_decode_message(const u8 *payload, int n)
         case FSM_NEW_MESSAGE:
             if (payload[i] & PROTOCOL_QUERY) {
                 eds_fsm_state = FSM_QUERY;
-                i++;
             } else if (payload[i] & PROTOCOL_CLEAR_BUF) {
                 eds_fsm_state = FSM_CLEAR_BUF;
             } else if (payload[i] & PROTOCOL_TOGGLE_ANIMATION) {
@@ -147,7 +147,7 @@ int eds_decode_message(const u8 *payload, int n)
                 eds_fsm_state = FSM_WAIT_MESSAGE;
             }
             ESP_LOGD("FSM", "Payload is i-1]: %x [i]: %x and next state will be %d\n", payload[i-1], payload[i], eds_fsm_state);
-            eds_hal_send_byte(RESPONSE_ACK);
+            eds_send_ack();
             break;
 
         case FSM_QUERY:
@@ -180,19 +180,20 @@ int eds_decode_message(const u8 *payload, int n)
             ESP_LOGD("FSM", "Clear buffer");
             frame_counter = 0;
             eds_clear_framebuffer();
-            eds_send_ack();
+            eds_fsm_state = FSM_WAIT_MESSAGE;
+            i++;
             break;
 
         case FSM_TOGGLE_ANIMATION:
             ESP_LOGD("FSM", "Toggle animation");
             eds_toggle_animation();
-            eds_send_ack();
+            eds_fsm_state = FSM_WAIT_MESSAGE;
+            i++;
             break;
         
         case FSM_SAVE_FRAME:
             ESP_LOGD("FSM", "Save frame");
             is_zipped = payload[i] & PROTOCOL_ZIPPED_FRAME;
-            eds_send_ack();
             i++;
             received_frame_bytes = 0;
             eds_fsm_state = FSM_RECV_FRAME;
