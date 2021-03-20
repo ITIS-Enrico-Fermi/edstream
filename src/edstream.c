@@ -108,7 +108,7 @@ int eds_decode_message(uint8_t *payload, int n) {
                 eds_hal_send_byte(10);
 
             if(payload[i] == QUERY_SUPPORTED_FX)
-                eds_hal_send_byte(0x00);    //  still dummy
+                eds_hal_send_byte(0x00);
         
             i++;
             eds_fsm_state = FSM_WAIT_MESSAGE;
