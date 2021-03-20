@@ -38,7 +38,7 @@ void eds_hal_init(const struct eds_hal_config *config) {
 }
 
 int eds_hal_send_byte(u8 x) {
-    return putchar(x);  // TODO: substitute this function call with eds_hal_send(&x, 1); and test if it works
+    return eds_hal_send(&x, 1);
 }
 
 int eds_hal_send(const u8 *src, u16 n) {
@@ -47,12 +47,11 @@ int eds_hal_send(const u8 *src, u16 n) {
     return res;
 }
 
-int eds_hal_recv(uint8_t *dst, int n) {
+int eds_hal_recv(u8 *dst, int n) {
     return uart_read_bytes(UART_NUM_0, dst, n, 100 / portTICK_RATE_MS);
 }
 
-int eds_hal_display_show(uint8_t *frame) {
-    ssd1306_clearScreen();
+int eds_hal_display_show(const uint8_t *frame) {
     ssd1306_drawBuffer(0, 0, OLED_W, OLED_H, frame);
     return 0;
 }
