@@ -27,7 +27,8 @@ def main(port: str, speed: int, speedtest):
             speed_test(s)
 
         while True:
-            payload = input(">> ")
+            payload = eval(input(">> "))  # 'ff'*256 (string*number of times) is allowed
+            print(f">> {payload}")
             send_raw_byte(s, payload)
 
 if __name__ == '__main__':

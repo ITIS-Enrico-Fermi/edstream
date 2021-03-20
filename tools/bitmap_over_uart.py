@@ -78,9 +78,8 @@ class ProtocolHandler:
         Send a series of bytes to the embedded device. Store these bytes and save them into the frame buffer
         :param bytes buf: bytes of which the bitmap image is made up of
         """
-        #self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
-        self.serial_port.write(bytes(1))
-        #assert self.__check_ack()
+        self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
+        assert self.__check_ack()
         self.serial_port.write(buf)
         #assert self.__check_ack()
 

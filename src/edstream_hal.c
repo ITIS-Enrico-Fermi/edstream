@@ -6,6 +6,8 @@
  */
 
 #include "edstream_hal.h"
+#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+#include "esp_log.h"
 
 #include <stdio.h>
 #include "ssd1306.h"
@@ -14,27 +16,35 @@
 
 static struct eds_hal_config configuration;
 
-void eds_hal_init(struct eds_hal_config *config) {
-    configuration = *config;
+static u8 uart_num_mem;
+static QueueHandle_t queue_handle;
 
+void eds_hal_init(const struct eds_hal_config *config) {
+
+    configuration = *config;    
+
+    // I2C
     ssd1306_platform_i2cConfig_t cfg = {
-        .sda = configuration.sda_pin,
-        .scl = configuration.scl_pin
+        .sda = config->i2c_pins.sda,
+        .scl = config->i2c_pins.scl
     };
-    ssd1306_platform_i2cInit(configuration.i2c, 0, &cfg);
+    ssd1306_platform_i2cInit(config->i2c_num, 0, &cfg);
 
-    //Reopen UART in blocking I/O mode
-    QueueHandle_t uart_event_queue;
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM_0, 2048, 2048, 10, &uart_event_queue, 0));
-
+    // UART
+    ESP_ERROR_CHECK(uart_param_config(config->uart_num, &(config->uart_conf)));
+    ESP_ERROR_CHECK(uart_set_pin(config->uart_num, config->uart_pins.tx, config->uart_pins.rx, config->uart_pins.rts, config->uart_pins.cts));
+    ESP_ERROR_CHECK(uart_driver_install(config->uart_num, config->uart_buf_size, config->uart_buf_size, 10, &queue_handle, 0));
+    uart_num_mem = config->uart_num;
 }
 
-int eds_hal_send_byte(uint8_t x) {
-    return putchar(x);
+int eds_hal_send_byte(u8 x) {
+    return putchar(x);  // TODO: substitute this function call with eds_hal_send(&x, 1); and test if it works
 }
 
-int eds_hal_send(uint8_t *src, int n) {
-    return fwrite(src, sizeof(uint8_t), n, stdout);
+int eds_hal_send(const u8 *src, u16 n) {
+    size_t res = uart_write_bytes(uart_num_mem, (const char*) src, n);
+    uart_wait_tx_done(uart_num_mem, 100);  // timeout of 100 ticks
+    return res;
 }
 
 int eds_hal_recv(uint8_t *dst, int n) {
@@ -42,6 +52,7 @@ int eds_hal_recv(uint8_t *dst, int n) {
 }
 
 int eds_hal_display_show(uint8_t *frame) {
-    ssd1306_drawBuffer(0, 0, 128, 64, frame);
+    ssd1306_clearScreen();
+    ssd1306_drawBuffer(0, 0, OLED_W, OLED_H, frame);
     return 0;
 }
