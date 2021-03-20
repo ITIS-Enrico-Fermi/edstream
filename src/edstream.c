@@ -1,6 +1,6 @@
 #include "edstream.h"
 
-#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+#define LOG_LOCAL_LEVEL ESP_LOG_ERROR
 #include "esp_log.h"
 
 static bool is_animation_running = false;
@@ -51,6 +51,7 @@ void show_animation_task(void* pvParameters)
     int local_frame_counter = 0;
     ESP_LOGD("SHOW", "Entering while loop");
     while (is_animation_running) {
+        ESP_LOGD("SHOW", "Showing frame number: %d", local_frame_counter);
         eds_hal_display_show(framebuffer + local_frame_counter*FRAME_SIZE);
         local_frame_counter++;
         local_frame_counter %= framebuffer_size;
@@ -62,9 +63,9 @@ void show_animation_task(void* pvParameters)
 int eds_start_animation()
 {
     if(!is_animation_running) {
-        ESP_LOGD("START", "Start automation");
+        ESP_LOGD("START", "Start animation");
         // eds_hal_send(PROTOCOL_TOGGLE_ANIMATION, 1);
-        xTaskCreate(show_animation_task, "show_animation_task", 8192, NULL, 5, NULL);  // TODO: Guru meditation error
+        xTaskCreatePinnedToCore(show_animation_task, "show_animation_task", 8192, NULL, 1, NULL, 1);  // TODO: Guru meditation error
         is_animation_running = true;
     }
     return 0;
@@ -147,8 +148,7 @@ int eds_decode_message(const u8 *payload, int n)
             } else {
                 eds_fsm_state = FSM_WAIT_MESSAGE;
             }
-            ESP_LOGD("FSM", "Payload is i-1]: %x [i]: %x and next state will be %d\n", payload[i-1], payload[i], eds_fsm_state);
-            eds_hal_send_byte(RESPONSE_ACK);
+            ESP_LOGI("FSM", "Payload is i-1]: %x [i]: %x and next state will be %d\n", payload[i-1], payload[i], eds_fsm_state);
             break;
 
         case FSM_QUERY:
@@ -182,12 +182,16 @@ int eds_decode_message(const u8 *payload, int n)
             frame_counter = 0;
             eds_clear_framebuffer();
             eds_send_ack();
+            i++;
+            eds_fsm_state = FSM_WAIT_MESSAGE;
             break;
 
         case FSM_TOGGLE_ANIMATION:
             ESP_LOGD("FSM", "Toggle animation");
             eds_toggle_animation();
             eds_send_ack();
+            i++;
+            eds_fsm_state = FSM_WAIT_MESSAGE;
             break;
         
         case FSM_SAVE_FRAME:

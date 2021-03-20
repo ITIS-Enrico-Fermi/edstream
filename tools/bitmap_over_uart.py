@@ -56,7 +56,7 @@ class ProtocolHandler:
                 | ((0x01 << int(BytePosition.ZIPPED)) if zipped else 0x00) \
                 | ((0x01 << int(BytePosition.SAVE)) if save else 0x00)
         start_byte: bytes = bytes([sb])
-        # print(start_byte)
+        print(start_byte.hex())
         self.serial_port.write(start_byte)
 
     # def __send_stop_byte(self) -> None:
@@ -79,8 +79,10 @@ class ProtocolHandler:
         """
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
+        print(len(buf))
         self.serial_port.write(buf)
         assert self.__check_ack()
+        self.start()  # TODO: for testing purpose
 
     def set_refresh_rate(self, rr: int) -> None:
         """
@@ -89,7 +91,7 @@ class ProtocolHandler:
         """
         self.__send_start_byte(set_rr = True)
         assert self.__check_ack()
-        self.serial_port.write(byte([rr]))
+        self.serial_port.write(bytes([rr]))
         assert self.__check_ack()
 
     def start(self) -> None:
@@ -122,7 +124,7 @@ def main(serial_port_name: str, show: bool, start_animation: bool, refresh_rate:
             handler.clear()
         elif start_animation:
             handler.start()
-        elif refresh_rate != -1:
+        elif refresh_rate:
             handler.set_refresh_rate(refresh_rate)
         else:  # Default behavior -> send bitmap
             handler.send_bitmap(stdin_img_bytes.getvalue())

@@ -30,7 +30,8 @@ void eds_hal_init(const struct eds_hal_config *config)
 
 int eds_hal_send_byte(u8 x)
 {
-    return putchar(x);  // TODO: substitute this function call with eds_hal_send(&x, 1); and test if it works
+    // return putchar(x);
+    return eds_hal_send(&x, 1);
 }
 
 int eds_hal_send(const u8 *src, u16 n)
@@ -52,7 +53,7 @@ int eds_hal_recv(u8 *dst, u16 n)  // read at most n bytes
 
 int eds_hal_display_show(const u8 *frame)
 {
-    ssd1306_clearScreen();
+    // ssd1306_clearScreen();
     ssd1306_drawBitmap(0, 0, OLED_W, OLED_H, frame);
     return 0;
 }

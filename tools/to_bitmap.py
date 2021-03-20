@@ -20,7 +20,7 @@ def main() -> None:
     Processing
     """
     img: Image = Image.open(stdin_img_bytes)
-    img: Image = img.convert('LA')  # Convert to grayscale
+    img: Image = img.convert('L')  # Convert to grayscale
     img: Image = img.resize((128, 64), Image.LANCZOS)  # Resize to 128x64 or 128x62 [pixels]. Lanczos interpolation for best result
     
     """

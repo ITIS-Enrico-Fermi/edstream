@@ -28,6 +28,7 @@
 
 //  Clear animation buffer
 #define PROTOCOL_CLEAR_BUF          (0x01 << 4)
+#define PROTOCOL_SIZE               (0x01 << 5)
 
 #define PROTOCOL_QUERY              (0x01 << 7)
 

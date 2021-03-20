@@ -25,7 +25,7 @@ void receiver(void *pvParameters)
     int read;
 
     while(true) {
-        vTaskDelay(1);
+        vTaskDelay(1/portTICK_PERIOD_MS);
         read = eds_hal_recv(cmd, 512);
         if (read <= 0) continue;
         ESP_LOGD("RX", "Read bytes: %d", read);
@@ -38,5 +38,5 @@ void receiver(void *pvParameters)
 void app_main()
 {
     // esp_log_level_set("*", ESP_LOG_VERBOSE);
-    xTaskCreate(receiver, "receiver", 8192, NULL, 0, NULL);  // Yep, this is a huge amount of memory
+    xTaskCreatePinnedToCore(receiver, "receiver", 8192, NULL, 0, NULL, 0);  // Yep, this is a huge amount of memory
 }
