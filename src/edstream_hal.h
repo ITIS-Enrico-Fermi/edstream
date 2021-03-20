@@ -56,7 +56,7 @@ int eds_hal_send(const u8 *src, u16 n);
 /*
  *  @return Number of read bytes from UART
  */
-int eds_hal_recv(u8 *dst, u16 n);
+int eds_hal_recv(u8 *dst, int n);
 int eds_hal_display_show(const uint8_t *frame);
 
 #endif
