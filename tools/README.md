@@ -30,6 +30,6 @@ Send an image to the embedded device
 cat image.png | python3 to_bitmap.py | python3 rotate_pixel.py | python3 bitmap_over_uart.py
 ```
 
-evnetually set your device serial port with -p option in `bitmapt_over_uart.py` script
+evnetually set your device serial port with -p option in `bitmap_over_uart.py` script
 
 ### Video sream
