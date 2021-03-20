@@ -1,5 +1,8 @@
 #include "edstream.h"
 
+#define LOG_LOCAL_LEVEL ESP_LOG_INFO
+#include "esp_log.h"
+
 static bool is_animation_running = false;
 static eds_zip_function_t eds_zip_function = eds_zip_deflate;
 
@@ -115,11 +118,12 @@ int eds_decode_message(const u8 *payload, int n)
         
         case FSM_RECV_FRAME:
             current_frame[received_frame_bytes++] = payload[i++];
+            ESP_LOGD("FSM", "Bytes counter: %d", received_frame_bytes);
             if(received_frame_bytes == 1024) {
+                ESP_LOGI("FSM", "Drawing...");
                 eds_hal_display_show(current_frame);
                 eds_fsm_state = FSM_WAIT_MESSAGE;
             }
-            ESP_LOGD("FSM", "Received frame bytes: %d", received_frame_bytes);
             break;
 
         default:
