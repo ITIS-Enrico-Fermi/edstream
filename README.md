@@ -45,13 +45,8 @@ cp lib/edstream/sdkconfig .
 <br> With _clear_ bit set to 1
 <br> No payload expected
 
-### Start animation
+### Toggle animation
 ![Start animation](diagrams/Start.svg)
-<br> With _start_ bit set to 1
-<br> No payload expected
-
-### Stop animation
-![Start animation](diagrams/Start.svg)
-<br> With _stop_ bit set to 1
+<br> With _start_ / _stop_ bit set to 1
 <br> No payload expected
 
