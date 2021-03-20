@@ -6,6 +6,8 @@
 #include <string.h>
 #include "esp_log.h"
 #include "edstream_hal.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 /*
  *  Protocol option bits
@@ -35,6 +37,9 @@
 
 #define RESPONSE_ACK                (0xff)
 
+#define FRAME_SIZE                  (1024)
+#define MAX_FRAME_NUMBER            (5)
+
 /*
  *  Controller functions
  */
@@ -55,5 +60,9 @@ void eds_zip_deflate(u8 *src, u8 *dst, int *pl_size);
 
 //  Callback function to decode messages
 int eds_decode_message(const u8 *payload, int i);
+
+int eds_send_ack(void);
+void eds_toggle_animation(void);
+void eds_clear_framebuffer(void);
 
 #endif //__EDSTREAM_H

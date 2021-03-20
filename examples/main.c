@@ -9,6 +9,9 @@
 #include "edstream.h"
 #include "edstream_hal.h"
 
+#define LOG_LOCAL_LEVEL ESP_LOG_ERROR
+#include "esp_log.h"
+
 void receiver(void *pvParameters)
 {
     struct eds_hal_config eds_hal_conf = eds_hal_default();
@@ -22,7 +25,7 @@ void receiver(void *pvParameters)
     int read;
 
     while(true) {
-        vTaskDelay(1/portTICK_PERIOD_MS);
+        vTaskDelay(1);
         read = eds_hal_recv(cmd, 512);
         if (read <= 0) continue;
         ESP_LOGD("RX", "Read bytes: %d", read);
@@ -34,6 +37,6 @@ void receiver(void *pvParameters)
 
 void app_main()
 {
-    esp_log_level_set("*", ESP_LOG_VERBOSE);
-    xTaskCreate(receiver, "receiver", 4096, NULL, 0, NULL);
+    // esp_log_level_set("*", ESP_LOG_VERBOSE);
+    xTaskCreate(receiver, "receiver", 8192, NULL, 0, NULL);  // Yep, this is a huge amount of memory
 }

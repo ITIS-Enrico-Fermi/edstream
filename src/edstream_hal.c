@@ -30,7 +30,7 @@ void eds_hal_init(const struct eds_hal_config *config)
 
 int eds_hal_send_byte(u8 x)
 {
-    return putchar(x);
+    return putchar(x);  // TODO: substitute this function call with eds_hal_send(&x, 1); and test if it works
 }
 
 int eds_hal_send(const u8 *src, u16 n)
