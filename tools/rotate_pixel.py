@@ -3,6 +3,8 @@ import argparse
 import sys
 from io import BytesIO
 
+__authors__ = "5H wild nerds"
+
 def main(use_stdin: bool, image: str):
     if use_stdin:
         stdin_img_bytes = BytesIO(sys.stdin.buffer.read())

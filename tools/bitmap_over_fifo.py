@@ -1,5 +1,5 @@
 """
-Send bitmap over UART
+Send bitmap over UART (through uart_manager.py)
 """
 
 __authors__ = "5H wild nerds"
@@ -11,8 +11,9 @@ from io import BytesIO
 from PIL import Image
 from enum import IntEnum, auto
 from time import sleep
+from typing import BinaryIO
+import os
 
-SERIAL_PORT_NAME: str = "/dev/ttyUSB0"  # Default value
 
 class BytePosition(IntEnum):
     """
@@ -28,14 +29,14 @@ class BytePosition(IntEnum):
     QUERY = auto()
 
 class ProtocolHandler:
-    def __init__(self, serial_port: serial.Serial) -> None:
+    def __init__(self, fifo: BinaryIO) -> None:
         """
         Initializator
-        :param serial.Serial serial_port: Open and active serial port over which send the data
+        :param BinaryIO fifo: Open fifo over which send and read the data
         :return: Nothing
         :rtype: None
         """
-        self.serial_port: serial.Serial = serial_port
+        self.fifo: BinaryIO = fifo
     
     def __send_start_byte(self, clear: bool = False, start: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False, size_128x64: bool = False, query: bool = False) -> None:
         """
@@ -58,7 +59,7 @@ class ProtocolHandler:
                 | ((0x01 << int(BytePosition.SAVE)) if save else 0x00)
         start_byte: bytes = bytes([sb])
         # print(start_byte)
-        self.serial_port.write(start_byte)
+        self.fifo.write(start_byte)
 
     # def __send_stop_byte(self) -> None:
     #     """
@@ -71,7 +72,7 @@ class ProtocolHandler:
         Check if the embedded device acknowledged start or stop byte
         ACK byte: 0xff
         """
-        return (self.serial_port.read() == b'\xff')
+        return (self.fifo.read(1) == b'\xff')
 
     def send_bitmap(self, buf: bytes) -> None:
         """
@@ -80,7 +81,8 @@ class ProtocolHandler:
         """
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
-        self.serial_port.write(buf)
+        print(len(buf))
+        self.fifo.write(buf)  # buf's length must be 1024 bytes
         assert self.__check_ack()
 
     def set_refresh_rate(self, rr: int) -> None:
@@ -90,7 +92,7 @@ class ProtocolHandler:
         """
         self.__send_start_byte(set_rr = True)
         assert self.__check_ack()
-        self.serial_port.write(byte([rr]))
+        self.fifo.write(bytes([rr]))
         assert self.__check_ack()
 
     def start(self) -> None:
@@ -108,9 +110,12 @@ class ProtocolHandler:
         assert self.__check_ack()
 
 
-def main(port: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
-    with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=3) as uart:
-        handler = ProtocolHandler(uart)
+def main(fifo_path: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
+    with open(fifo_path, 'r+b', 0) as fifo:
+        fd = fifo.fileno()
+        os.set_blocking(fd, True)
+
+        handler = ProtocolHandler(fifo)
         if clear:
             handler.clear()
         elif start_animation:
@@ -133,7 +138,7 @@ def main(port: str, show: bool, start_animation: bool, refresh_rate: int, clear:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--port', help='Serial port name', type=str, default=SERIAL_PORT_NAME)
+    parser.add_argument('-f', '--fifo', help='Named pipe (FIFO) path', type=str, default='fifo')
     parser.add_argument('-s', '--show', help='Show piped image (on the PC) before sending', default=False, action='store_true')
     parser.add_argument('--start-animation', help='Start animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     parser.add_argument('--nostdin', help="Open image.bmp instead of stdin", default=True, action='store_false')
@@ -142,5 +147,5 @@ if __name__ == "__main__":
     
     parser.add_argument('--clear', help='Clear frame buffer stored on the embedded device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     args = parser.parse_args()
-    main(args.port, args.show, args.start_animation, args.refresh_rate, args.clear, args.nostdin)
+    main(args.fifo, args.show, args.start_animation, args.refresh_rate, args.clear, args.nostdin)
 
