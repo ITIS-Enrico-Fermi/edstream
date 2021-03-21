@@ -81,7 +81,7 @@ class ProtocolHandler:
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
         self.serial_port.write(buf)
-        #assert self.__check_ack()
+        assert self.__check_ack()
 
     def set_refresh_rate(self, rr: int) -> None:
         """
