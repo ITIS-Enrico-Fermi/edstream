@@ -10,6 +10,13 @@ import sys
 from io import BytesIO
 from PIL import Image
 
+def processing(image: Image) -> Image:
+    image = image.resize((128, 64), Image.LANCZOS)  # Resize to 128x64 or 128x62 [pixels]. Lanczos interpolation for best result
+    image = image.convert('1')  # Convert to 1 bit black/white
+
+    return image
+
+
 def main():
     """
     Get input image as raw bytes
@@ -20,8 +27,7 @@ def main():
     Processing
     """
     img = Image.open(stdin_img_bytes)
-    img = img.resize((128, 64), Image.LANCZOS)  # Resize to 128x64 or 128x62 [pixels]. Lanczos interpolation for best result
-    img = img.convert('1')  # Convert to 1 bit black/white
+    img = processing(img)
     
     """
     Saving image into ByteIO object
