@@ -3,11 +3,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
-#include "esp_log.h"
-#include "edstream_hal.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 /*
  *  Protocol option bits
@@ -44,22 +39,22 @@
  *  Controller functions
  */
 
-int eds_send_frame(const u8 *frame, bool save, bool zip);
+int eds_send_frame(const uint8_t *frame, bool save, bool zip);
 int eds_start_animation();
 int eds_stop_animation();
 
 bool eds_query_animation_status();
 
-typedef void(*eds_zip_function_t)(u8 *src, u8 *dst, int *pl_size);
+typedef void(*eds_zip_function_t)(uint8_t *src, uint8_t *dst, int *pl_size);
 void eds_zip_function_set(eds_zip_function_t f);
-void eds_zip_deflate(u8 *src, u8 *dst, int *pl_size);
+void eds_zip_deflate(uint8_t *src, uint8_t *dst, int *pl_size);
 
 /*
  *  Device functions
  */
 
 //  Callback function to decode messages
-int eds_decode_message(const u8 *payload, int i);
+int eds_decode_message(const uint8_t *payload, int i);
 
 int eds_send_ack(void);
 void eds_toggle_animation(void);

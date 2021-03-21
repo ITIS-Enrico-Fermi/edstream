@@ -3,8 +3,6 @@
 
 #include "stdint.h"
 #include "stdbool.h"
-#include <stdio.h>
-#include "ssd1306.h"
 #include "driver/uart.h"
 
 #define OLED_W          (128)
@@ -12,12 +10,9 @@
 #define UART_NUM        (UART_NUM_0)  // Connected to CP2102
 #define UART_BUF_SIZE   (2048)
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-
 static struct _i2c_pins {
-    u8 sda;
-    u8 scl;
+    uint8_t sda;
+    uint8_t scl;
 };
 
 static struct _uart_pins {
@@ -28,12 +23,12 @@ static struct _uart_pins {
 };
 
 struct eds_hal_config {
-    u8 i2c_num;
-    u8 uart_num;
+    uint8_t i2c_num;
+    uint8_t uart_num;
     struct _i2c_pins i2c_pins;
     struct _uart_pins uart_pins;        
     uart_config_t uart_conf;
-    u16 uart_buf_size;
+    uint16_t uart_buf_size;
 };
 #define eds_hal_default() ((struct eds_hal_config){ .i2c_num=0, \
                                                     .i2c_pins = {.sda=21, .scl=22}, \
@@ -46,17 +41,17 @@ struct eds_hal_config {
 
 void eds_hal_init(const struct eds_hal_config *config);
 
-int eds_hal_send_byte(u8 x);
+int eds_hal_send_byte(uint8_t x);
 
 /*
  *  @return Number of sent bytes to UART
  */
-int eds_hal_send(const u8 *src, u16 n);
+int eds_hal_send(const uint8_t *src, int n);
 
 /*
  *  @return Number of read bytes from UART
  */
-int eds_hal_recv(u8 *dst, int n);
+int eds_hal_recv(uint8_t *dst, int n);
 int eds_hal_display_show(const uint8_t *frame);
 
 #endif

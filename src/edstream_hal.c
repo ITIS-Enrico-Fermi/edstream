@@ -6,17 +6,15 @@
  */
 
 #include "edstream_hal.h"
+
 #define LOG_LOCAL_LEVEL ESP_LOG_NONE
 #include "esp_log.h"
-
-#include <stdio.h>
 #include "ssd1306.h"
-
 #include "driver/uart.h"
 
 static struct eds_hal_config configuration;
 
-static u8 uart_num_mem;
+static uint8_t uart_num_mem;
 static QueueHandle_t queue_handle;
 
 void eds_hal_init(const struct eds_hal_config *config) {
@@ -37,17 +35,17 @@ void eds_hal_init(const struct eds_hal_config *config) {
     uart_num_mem = config->uart_num;
 }
 
-int eds_hal_send_byte(u8 x) {
+int eds_hal_send_byte(uint8_t x) {
     return eds_hal_send(&x, 1);
 }
 
-int eds_hal_send(const u8 *src, u16 n) {
+int eds_hal_send(const uint8_t *src, int n) {
     size_t res = uart_write_bytes(uart_num_mem, (const char*) src, n);
     uart_wait_tx_done(uart_num_mem, 100);  // timeout of 100 ticks
     return res;
 }
 
-int eds_hal_recv(u8 *dst, int n) {
+int eds_hal_recv(uint8_t *dst, int n) {
     return uart_read_bytes(UART_NUM_0, dst, n, 100 / portTICK_RATE_MS);
 }
 
