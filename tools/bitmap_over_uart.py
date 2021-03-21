@@ -11,6 +11,7 @@ from io import BytesIO
 from PIL import Image
 from enum import IntEnum, auto
 from time import sleep
+import logging
 
 SERIAL_PORT_NAME: str = "/dev/ttyUSB0"  # Default value
 
@@ -71,7 +72,11 @@ class ProtocolHandler:
         Check if the embedded device acknowledged start or stop byte
         ACK byte: 0xff
         """
-        return (self.serial_port.read() == b'\xff')
+
+        has_ackd = (self.serial_port.read() == b'\xff')
+        if not has_ackd:
+            logging.warning("Device hasn't acknowledged")
+        return has_ackd
 
     def send_bitmap(self, buf: bytes) -> None:
         """
@@ -79,9 +84,9 @@ class ProtocolHandler:
         :param bytes buf: bytes of which the bitmap image is made up of
         """
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
-        assert self.__check_ack()
+        self.__check_ack()
         self.serial_port.write(buf)
-        assert self.__check_ack()
+        self.__check_ack()
 
     def set_refresh_rate(self, rr: int) -> None:
         """
@@ -89,23 +94,23 @@ class ProtocolHandler:
         :param int rr: Refresh Rate value in milliseconds (later divided by portTICK_MS on the ESP32 MCU)
         """
         self.__send_start_byte(set_rr = True)
-        assert self.__check_ack()
+        self.__check_ack()
         self.serial_port.write(byte([rr]))
-        assert self.__check_ack()
+        self.__check_ack()
 
     def start(self) -> None:
         """
         Start animation
         """
         self.__send_start_byte(start = True)
-        assert self.__check_ack()
+        self.__check_ack()
 
     def clear(self) -> None:
         """
         Clear embedded device's frame buffer
         """
         self.__send_start_byte(clear = True)
-        assert self.__check_ack()
+        self.__check_ack()
 
 
 def main(port: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
