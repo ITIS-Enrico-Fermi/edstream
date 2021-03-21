@@ -1,6 +1,6 @@
 #include "edstream.h"
 
-#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+#define LOG_LOCAL_LEVEL ESP_LOG_NONE
 #include "esp_log.h"
 
 static bool is_animation_running = false;
