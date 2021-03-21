@@ -22,7 +22,7 @@ class BytePosition(IntEnum):
     SAVE = 0
     ZIPPED = auto()
     SET_RR = auto()
-    START = auto()
+    TOGGLE = auto()
     CLEAR = auto()
     SIZE = auto()
     RESERVED_FOR_FUTURE_USE = auto()
@@ -38,11 +38,11 @@ class ProtocolHandler:
         """
         self.fifo: BinaryIO = fifo
     
-    def __send_start_byte(self, clear: bool = False, start: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False, size_128x64: bool = False, query: bool = False) -> None:
+    def __send_start_byte(self, clear: bool = False, toggle: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False, size_128x64: bool = False, query: bool = False) -> None:
         """
         Compose and send protocol's start byte. Parameters are sorted from the one with the highest priority to the one with the lowest priority
         :param bool clear: Clear embedded device's frame buffer. Highest priority, mutual exclusion. If it is equal to True no payload expected
-        :param bool start: Start or stop animation on the embedded device. When equals to True the animation starts (no payload expected), otherwise the payload is added to the frame buffer
+        :param bool toggle: Start and stop (toggle) animation on the embedded device. When equals to True the animation is toggled (no payload expected), otherwise the payload is added to the frame buffer
         :param bool set_rr: Set refresh-rate. Mutual exclusion. If equals to True 1 byte of payload expected; the payload must represent the refresh rate as ms(/portTICK_MS)
         :param bool zipped: If True the embedded device will unzip the frame
         :param bool save: Does the frame belong to an animation? If True the frame is saved in the frame buffer, otherwise is displayed immediately
@@ -53,7 +53,7 @@ class ProtocolHandler:
                 | ((0x01 << int(BytePosition.QUERY)) if query else 0x00) \
                 | ((0x01 << int(BytePosition.SIZE)) if size_128x64 else 0x00) \
                 | ((0x01 << int(BytePosition.CLEAR)) if clear else 0x00) \
-                | ((0x01 << int(BytePosition.START)) if start else 0x00) \
+                | ((0x01 << int(BytePosition.TOGGLE)) if toggle else 0x00) \
                 | ((0x01 << int(BytePosition.SET_RR)) if set_rr else 0x00) \
                 | ((0x01 << int(BytePosition.ZIPPED)) if zipped else 0x00) \
                 | ((0x01 << int(BytePosition.SAVE)) if save else 0x00)
@@ -81,7 +81,7 @@ class ProtocolHandler:
         """
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
-        print(len(buf))
+        # print(len(buf))
         self.fifo.write(buf)  # buf's length must be 1024 bytes
         assert self.__check_ack()
 
@@ -95,12 +95,12 @@ class ProtocolHandler:
         self.fifo.write(bytes([rr]))
         assert self.__check_ack()
 
-    def start(self) -> None:
+    def toggle(self) -> None:
         """
-        Start animation
+        Toggle animation
         """
-        self.__send_start_byte(start = True)
-        assert self.__check_ack()
+        self.__send_start_byte(toggle = True)
+        assert self.__check_ack() 
 
     def clear(self) -> None:
         """
@@ -110,7 +110,7 @@ class ProtocolHandler:
         assert self.__check_ack()
 
 
-def main(fifo_path: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
+def main(fifo_path: str, show: bool, toggle_animation: bool, stop_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
     with open(fifo_path, 'r+b', 0) as fifo:
         fd = fifo.fileno()
         os.set_blocking(fd, True)
@@ -118,8 +118,8 @@ def main(fifo_path: str, show: bool, start_animation: bool, refresh_rate: int, c
         handler = ProtocolHandler(fifo)
         if clear:
             handler.clear()
-        elif start_animation:
-            handler.start()
+        elif toggle_animation:
+            handler.toggle()
         elif refresh_rate:
             handler.set_refresh_rate(refresh_rate)
         else:
@@ -140,12 +140,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--fifo', help='Named pipe (FIFO) path', type=str, default='fifo')
     parser.add_argument('-s', '--show', help='Show piped image (on the PC) before sending', default=False, action='store_true')
-    parser.add_argument('--start-animation', help='Start animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
+    parser.add_argument('--toggle-animation', help='Start animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
+    parser.add_argument('--stop-animation', help='Stop animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     parser.add_argument('--nostdin', help="Open image.bmp instead of stdin", default=True, action='store_false')
 
     parser.add_argument('--refresh-rate', help='Set animation refresh rate. Inhibit default behavior (send bitmap). No piped image', type=int, default=None)  # rr = None -> skip set_rr flag (false)
     
     parser.add_argument('--clear', help='Clear frame buffer stored on the embedded device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     args = parser.parse_args()
-    main(args.fifo, args.show, args.start_animation, args.refresh_rate, args.clear, args.nostdin)
+    main(args.fifo, args.show, args.toggle_animation, args.stop_animation, args.refresh_rate, args.clear, args.nostdin)
 
