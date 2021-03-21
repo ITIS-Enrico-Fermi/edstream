@@ -1,13 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-
-#include "driver/gpio.h"
-
-#include "driver/i2c.h"
-#include <ssd1306.h>
-
 #include "edstream.h"
 #include "edstream_hal.h"
+
+#include <ssd1306.h>
 
 #define LOG_LOCAL_LEVEL ESP_LOG_ERROR
 #include "esp_log.h"
@@ -21,7 +15,7 @@ void receiver(void *pvParameters)
 
     ssd1306_clearScreen();
 
-    u8 cmd[512];
+    uint8_t cmd[512];
     int read;
 
     while(true) {
@@ -37,6 +31,5 @@ void receiver(void *pvParameters)
 
 void app_main()
 {
-    // esp_log_level_set("*", ESP_LOG_VERBOSE);
     xTaskCreate(receiver, "receiver", 8192, NULL, 0, NULL);  // Yep, this is a huge amount of memory
 }
