@@ -10,7 +10,7 @@
 #include <string.h>
 
 static bool is_animation_running = false;
-static int refresh_rate = 20;  // ms
+static int refresh_rate = 33;  // ms
 static eds_zip_function_t eds_zip_function = eds_zip_deflate;
 
 static uint8_t framebuffer[FRAME_SIZE * MAX_FRAME_NUMBER];
