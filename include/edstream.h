@@ -33,7 +33,7 @@
 #define RESPONSE_ACK                (0xff)
 
 #define FRAME_SIZE                  (1024)
-#define MAX_FRAME_NUMBER            (5)
+#define MAX_FRAME_NUMBER            (50)
 
 /*
  *  Controller functions
