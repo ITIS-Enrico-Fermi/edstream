@@ -81,6 +81,7 @@ int eds_stop_animation()
     if(is_animation_running) {
         // eds_hal_send(PROTOCOL_TOGGLE_ANIMATION, 1);
         is_animation_running = false;  // show_animation_task exits from loop and destroys himself
+        eds_hal_display_clear();
     }
     return 0;
 }

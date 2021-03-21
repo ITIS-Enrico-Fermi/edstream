@@ -53,3 +53,8 @@ int eds_hal_display_show(const uint8_t *frame) {
     ssd1306_drawBuffer(0, 0, OLED_W, OLED_H, frame);
     return 0;
 }
+
+int eds_hal_display_clear(void) {
+    ssd1306_clearScreen();
+    return 0;
+}

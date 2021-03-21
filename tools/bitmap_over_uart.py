@@ -81,7 +81,7 @@ class ProtocolHandler:
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
         self.serial_port.write(buf)
-        #assert self.__check_ack()
+        assert self.__check_ack()
 
     def set_refresh_rate(self, rr: int) -> None:
         """
@@ -109,7 +109,7 @@ class ProtocolHandler:
 
 
 def main(port: str, show: bool, start_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
-    with serial.Serial(port, baudrate=115200, bytesize=8) as uart:
+    with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=3) as uart:
         handler = ProtocolHandler(uart)
         if clear:
             handler.clear()
