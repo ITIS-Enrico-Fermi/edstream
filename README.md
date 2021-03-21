@@ -1,6 +1,8 @@
 # edstream
 Bitmap streaming facility for ESP32 and OLED displays.
 
+![Edstream logo](diagrams/eds_logo_scaled_down.png)
+
 ## Setting up
 
 Clone this project into _lib_ folder inside your PIO workspace
