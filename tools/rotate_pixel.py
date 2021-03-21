@@ -1,3 +1,14 @@
+"""
+rotate_pixel.py script
+
+Converts GLCD or standard horizontal bitmap images to SSD1306 format.
+Each byte represents a vertical pixel. Least significant bit is the first row,
+therefore a simple rotation of 90 degrees clockwise is needed which is a trivial
+operation to perform using Pillow.
+
+You can invoke this script in your shell pipeline, or use it as a standalone function.
+"""
+
 from PIL import Image
 import argparse
 import sys
