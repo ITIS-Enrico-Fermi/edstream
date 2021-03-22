@@ -54,3 +54,5 @@ cp lib/edstream/sdkconfig .
 <br> With _start_ / _stop_ bit set to 1
 <br> No payload expected
 
+## Release numbering
+(major release).(new features).(bug fixing)
