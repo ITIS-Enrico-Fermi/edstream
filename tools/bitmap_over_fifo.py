@@ -118,8 +118,8 @@ class ProtocolHandler:
         self.__check_ack()
 
 
-def main(fifo_path: str, show: bool, toggle_animation: bool, stop_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
-    with open('fifo.in', 'wb', 0) as fifo_out, open('fifo.out', 'rb', 0) as fifo_in:
+def main(fifo_path_in: str, fifo_path_out: str, show: bool, toggle_animation: bool, stop_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
+    with open(fifo_path_in, 'wb', 0) as fifo_out, open(fifo_path_out, 'rb', 0) as fifo_in:
         fd_in = fifo_in.fileno()
         os.set_blocking(fd_in, True)
 
@@ -146,7 +146,8 @@ def main(fifo_path: str, show: bool, toggle_animation: bool, stop_animation: boo
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--fifo', help='Named pipe (FIFO) path', type=str, default='fifo')
+    parser.add_argument('--fifo-in', help='Named pipe (FIFO) for UART communication (debug_uart.py). Input endpoint', type=str, default='fifo.in')
+    parser.add_argument('--fifo-out', help='Named pipe (FIFO) for UART communication (debug_uart.py). Output endpoint', type=str, default='fifo.out')
     parser.add_argument('-s', '--show', help='Show piped image (on the PC) before sending', default=False, action='store_true')
     parser.add_argument('--toggle-animation', help='Start animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     parser.add_argument('--stop-animation', help='Stop animation on the target device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
@@ -156,5 +157,5 @@ if __name__ == "__main__":
     
     parser.add_argument('--clear', help='Clear frame buffer stored on the embedded device. Inhibit default behavior (send bitmap). No piped image', default=False, action='store_true')
     args = parser.parse_args()
-    main(args.fifo, args.show, args.toggle_animation, args.stop_animation, args.refresh_rate, args.clear, args.nostdin)
+    main(args.fifo_in, args.fifo_out, args.show, args.toggle_animation, args.stop_animation, args.refresh_rate, args.clear, args.nostdin)
 

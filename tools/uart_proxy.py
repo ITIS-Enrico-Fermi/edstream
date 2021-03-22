@@ -23,11 +23,11 @@ def create_fifo(path: str) -> None:
 def delete_fifo(path: str) -> None:
     os.unlink(path)
 
-def main(port: str, fifo_path: str) -> None:
-    create_fifo('fifo.in')
-    create_fifo('fifo.out')
+def main(port: str, fifo_path_in: str, fifo_path_out: str) -> None:
+    create_fifo(fifo_path_in)
+    create_fifo(fifo_path_out)
     try:
-        with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=0) as uart, open('fifo.in', 'rb', 0) as fifo_in, open('fifo.out', 'wb', 0) as fifo_out:
+        with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=0) as uart, open(fifo_path_in, 'rb', 0) as fifo_in, open(fifo_path_out, 'wb', 0) as fifo_out:
             fd_in = fifo_in.fileno()
             os.set_blocking(fd_in, False)
             uart.flushInput()
@@ -51,14 +51,15 @@ def main(port: str, fifo_path: str) -> None:
                 
     except Exception as e:
         logging.debug(e)
-        delete_fifo('fifo.in')
-        delete_fifo('fifo.out')
+        delete_fifo(fifo_path_in)
+        delete_fifo(fifo_path_out)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, filemode="a", format="%(asctime)s - %(levelname)s -> %(message)s")
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', help='Serial port name', type=str, default=SERIAL_PORT_NAME)
-    parser.add_argument('-f', '--fifo', help='Named pipe (FIFO) for UART communication (debug_uart.py)', type=str, default='fifo')
+    parser.add_argument('--fifo-in', help='Named pipe (FIFO) for UART communication (debug_uart.py). Input endpoint', type=str, default='fifo.in')
+    parser.add_argument('--fifo-out', help='Named pipe (FIFO) for UART communication (debug_uart.py). Output endpoint', type=str, default='fifo.out')
     args = parser.parse_args()
-    main(args.port, args.fifo)
+    main(args.port, args.fifo_in, args.fifo_out)
