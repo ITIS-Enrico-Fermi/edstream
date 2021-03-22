@@ -29,12 +29,22 @@ def main(port: str, fifo_path: str) -> None:
             fd = fifo.fileno()
             os.set_blocking(fd, False)
             uart.flush()
+            ff_counter_uart: int = 0
+            ff_counter_fifo: int = 0
             while True:
                 uart_data: bytes = uart.read()
                 fifo_data: bytes = fifo.read()
+
+                if uart_data == fifo_data:
+                    uart_data = b''
+                    fifo_data = b''
+                    uart.flush()
+                    # while uart.read(1) == b'\xff' or fifo.read(1) == b'\xff': pass
+
                 if uart_data:
                     logging.info(f"UART: {uart_data}")
                     fifo.write(uart_data)
+                                   
                 if fifo_data:
                     logging.info(f"FIFO: {len(fifo_data[-1024:])}")
                     uart.write(fifo_data[-1024:])
