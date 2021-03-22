@@ -53,5 +53,6 @@ int eds_hal_send(const uint8_t *src, int n);
  */
 int eds_hal_recv(uint8_t *dst, int n);
 int eds_hal_display_show(const uint8_t *frame);
+int eds_hal_display_clear(void);
 
 #endif

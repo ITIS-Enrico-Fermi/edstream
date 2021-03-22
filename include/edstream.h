@@ -33,12 +33,12 @@
 #define RESPONSE_ACK                (0xff)
 
 #define FRAME_SIZE                  (1024)
-#define MAX_FRAME_NUMBER            (14)
+#define MAX_FRAME_NUMBER            (50)
 
 /*
  *  Controller functions
  */
-
+s
 int eds_send_frame(const uint8_t *frame, bool save, bool zip);
 int eds_start_animation();
 int eds_stop_animation();
