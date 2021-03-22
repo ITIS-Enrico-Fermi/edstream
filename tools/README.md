@@ -27,7 +27,7 @@ python bitmap_over_uart.py -h
 ### Image
 Run UART manager and leave it in backround
 ```
-python3 uart_manager.py -p YOUR_SERIAL_PORT
+python3 uart_proxy.py -p YOUR_SERIAL_PORT
 ```
 Send an image to the embedded device
 ```
@@ -40,7 +40,7 @@ python3 bitmap_over_fifo.py --toggle-animation
 ```
 The same command can be used to stop the animation (hide the image) and clear the display
 
-If needed, set your device serial port with -p option in `uart_manager.py` script
+If needed, set your device serial port with -p option in `uart_proxy.py` script
 
 ### Video stream
 
