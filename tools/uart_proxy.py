@@ -29,7 +29,7 @@ def main(port: str, fifo_path: str) -> None:
     try:
         with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=0) as uart, open('fifo.in', 'rb', 0) as fifo_in, open('fifo.out', 'wb', 0) as fifo_out:
             fd_in = fifo_in.fileno()
-            os.set_blocking(fd_in, True)
+            os.set_blocking(fd_in, False)
             uart.flushInput()
             uart.flushOutput()
             fifo_data: bytes = b''
