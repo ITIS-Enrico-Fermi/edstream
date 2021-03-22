@@ -24,41 +24,35 @@ def delete_fifo(path: str) -> None:
     os.unlink(path)
 
 def main(port: str, fifo_path: str) -> None:
-    create_fifo(fifo_path)
+    create_fifo('fifo.in')
+    create_fifo('fifo.out')
     try:
-        with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=0) as uart, open(fifo_path, 'r+b', 0) as fifo:
-            fd = fifo.fileno()
-            os.set_blocking(fd, False)
-            uart.flush()
+        with serial.Serial(port=port, baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=0) as uart, open('fifo.in', 'rb', 0) as fifo_in, open('fifo.out', 'wb', 0) as fifo_out:
+            fd_in = fifo_in.fileno()
+            os.set_blocking(fd_in, True)
+            uart.flushInput()
+            uart.flushOutput()
             fifo_data: bytes = b''
             uart_data: bytes = b''
-            uart_prev: bytes = b''
             while True:
+                fifo_data = fifo_in.read(1024)
                 uart_data = uart.read()
                 
                 if uart_data:
                     logging.info(f"UART: {uart_data}")
-                    os.write(fd, uart_data)
-                    # fifo.flush()
-
-                fifo_data = fifo.read()
-
-                if uart_data == fifo_data or fifo_data == uart_prev:  # Prevent echo between closed fifo and uart
-                    fifo_data = b''
-                    uart_data = b''
-                else:
-                    uart_prev = uart_data
+                    fifo_out.write(uart_data)
+                    fifo_out.flush()
 
                 if fifo_data:
-                    # logging.info(f"FIFO: {len(fifo_data[-1024:])}")
-                    uart.write(fifo_data[-1024:])
-                    # uart.flush()
-                                   
+                    logging.info(f"FIFO: {len(fifo_data)}")
+                    uart.write(fifo_data)
+                    uart.flush()
                 
                 
     except Exception as e:
         logging.debug(e)
-        delete_fifo(fifo_path)
+        delete_fifo('fifo.in')
+        delete_fifo('fifo.out')
 
 
 if __name__ == "__main__":

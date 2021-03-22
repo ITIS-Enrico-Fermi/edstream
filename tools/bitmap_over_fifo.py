@@ -16,7 +16,6 @@ from typing import BinaryIO
 import os
 import time
 
-
 class BytePosition(IntEnum):
     """
     See send_start_byte docstring for more details
@@ -31,15 +30,15 @@ class BytePosition(IntEnum):
     QUERY = auto()
 
 class ProtocolHandler:
-    def __init__(self, fifo: BinaryIO, fd) -> None:
+    def __init__(self, fifo_in: BinaryIO, fifo_out: BinaryIO) -> None:
         """
         Initializator
         :param BinaryIO fifo: Open fifo over which send and read the data
         :return: Nothing
         :rtype: None
         """
-        self.fifo: BinaryIO = fifo
-        self.fd = fd
+        self.fifo_in: BinaryIO = fifo_in
+        self.fifo_out: BinaryIO = fifo_out
     
     def __send_start_byte(self, clear: bool = False, toggle: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False, size_128x64: bool = False, query: bool = False) -> None:
         """
@@ -62,7 +61,8 @@ class ProtocolHandler:
                 | ((0x01 << int(BytePosition.SAVE)) if save else 0x00)
         start_byte: bytes = bytes([sb])
         # print(start_byte)
-        self.fifo.write(start_byte)
+        self.fifo_out.write(start_byte)
+        self.fifo_out.flush()
 
     # def __send_stop_byte(self) -> None:
     #     """
@@ -75,8 +75,7 @@ class ProtocolHandler:
         Check if the embedded device acknowledged start or stop byte
         ACK byte: 0xff
         """
-        # has_ackd = (self.fifo.read(1) == b'\xff')
-        has_ackd = (os.read(self.fd, 1)  == b'\xff')
+        has_ackd = (self.fifo_in.read(1)  == b'\xff')
         if not has_ackd:
             logging.warning("Device hasn't acknowledged")
         return has_ackd
@@ -88,8 +87,9 @@ class ProtocolHandler:
         """
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
-        self.fifo.write(bytes(10))  # Wake up fifo.read() in uart_manager
-        self.fifo.write(buf)  # buf's length must be 1024 bytes
+        # self.fifo_out.write(bytes(10))  # Wake up fifo.read() in uart_manager
+        self.fifo_out.write(buf)  # buf's length must be 1024 bytes
+        self.fifo_out.flush()
         assert self.__check_ack()
 
     def set_refresh_rate(self, rr: int) -> None:
@@ -99,7 +99,8 @@ class ProtocolHandler:
         """
         self.__send_start_byte(set_rr = True)
         assert self.__check_ack()
-        self.fifo.write(bytes([rr]))
+        self.fifo_out.write(bytes([rr]))
+        self.fifo_out.flush()
         assert self.__check_ack()
 
     def toggle(self) -> None:
@@ -118,11 +119,11 @@ class ProtocolHandler:
 
 
 def main(fifo_path: str, show: bool, toggle_animation: bool, stop_animation: bool, refresh_rate: int, clear: bool, use_stdin: bool):
-    with open(fifo_path, 'r+b', 0) as fifo:
-        fd = fifo.fileno()
-        os.set_blocking(fd, True)
+    with open('fifo.in', 'wb', 0) as fifo_out, open('fifo.out', 'rb', 0) as fifo_in:
+        fd_in = fifo_in.fileno()
+        os.set_blocking(fd_in, True)
 
-        handler = ProtocolHandler(fifo, fd)
+        handler = ProtocolHandler(fifo_in, fifo_out)
         if clear:
             handler.clear()
         elif toggle_animation:
