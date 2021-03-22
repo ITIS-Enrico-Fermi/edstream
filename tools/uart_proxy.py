@@ -48,9 +48,9 @@ def main(port: str, fifo_path_in: str, fifo_path_out: str) -> None:
                     uart.write(fifo_data)
                     uart.flush()
                 
-                
     except Exception as e:
         logging.debug(e)
+    except:
         delete_fifo(fifo_path_in)
         delete_fifo(fifo_path_out)
 
