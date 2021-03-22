@@ -38,7 +38,7 @@
 /*
  *  Controller functions
  */
-s
+
 int eds_send_frame(const uint8_t *frame, bool save, bool zip);
 int eds_start_animation();
 int eds_stop_animation();
