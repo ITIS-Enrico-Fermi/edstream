@@ -34,46 +34,27 @@ def main(port: str, fifo_path: str) -> None:
             uart_data: bytes = b''
             uart_prev: bytes = b''
             while True:
-                # r, w, x = select.select([fd], [fd], [])
-                # logging.debug(f"r: {fd in r}, w: {fd in w}")
-                # if fd in r:
-                fifo_data = fifo.read()
                 uart_data = uart.read()
-                # if uart_data or fifo_data:
-                #     logging.debug(f"UART: {uart_data}, FIFO: {fifo_data}, UART_PREV: {uart_prev}")
-
-                # if fifo_data is None:  # Prevent echo between closed fifo and uart
-                #     uart.flush()
-                #     uart.flushOutput()
-                #     uart_data = b''
-
-                if uart_data == fifo_data or fifo_data == uart_prev:  # Prevent echo between closed fifo and uart
-                    fifo_data = b''
-                else:
-                    uart_prev = uart_data
-
-               # if uart_data == fifo_data or (uart_data == b'' and fifo_data == uart_data_last_val) or (fifo_data == b'' and uart_data == fifo_data_last_val):
-               #     logging.debug(f"from UART: {uart_data}, from FIFO: {fifo_data}")
-               #     uart_data = b''
-               #     fifo_data = b''
-               #     uart.flush()
-               #     uart.flushInput()
-               #     uart.flushOutput()
-
-               # if uart_data:
-               #     uart_data_last_val = uart_data
-               # if fifo_data:
-               #     fifo_data_last_val = fifo_data
                 
                 if uart_data:
                     logging.info(f"UART: {uart_data}")
-                    fifo.write(uart_data)
+                    os.write(fd, uart_data)
                     # fifo.flush()
-                                   
+
+                fifo_data = fifo.read()
+
+                if uart_data == fifo_data or fifo_data == uart_prev:  # Prevent echo between closed fifo and uart
+                    fifo_data = b''
+                    uart_data = b''
+                else:
+                    uart_prev = uart_data
+
                 if fifo_data:
                     # logging.info(f"FIFO: {len(fifo_data[-1024:])}")
                     uart.write(fifo_data[-1024:])
                     # uart.flush()
+                                   
+                
                 
     except Exception as e:
         logging.debug(e)

@@ -31,7 +31,7 @@ class BytePosition(IntEnum):
     QUERY = auto()
 
 class ProtocolHandler:
-    def __init__(self, fifo: BinaryIO) -> None:
+    def __init__(self, fifo: BinaryIO, fd) -> None:
         """
         Initializator
         :param BinaryIO fifo: Open fifo over which send and read the data
@@ -39,6 +39,7 @@ class ProtocolHandler:
         :rtype: None
         """
         self.fifo: BinaryIO = fifo
+        self.fd = fd
     
     def __send_start_byte(self, clear: bool = False, toggle: bool = False, set_rr: bool = False, zipped: bool = False, save: bool = False, size_128x64: bool = False, query: bool = False) -> None:
         """
@@ -74,7 +75,8 @@ class ProtocolHandler:
         Check if the embedded device acknowledged start or stop byte
         ACK byte: 0xff
         """
-        has_ackd = (self.fifo.read(1) == b'\xff')
+        # has_ackd = (self.fifo.read(1) == b'\xff')
+        has_ackd = (os.read(self.fd, 1)  == b'\xff')
         if not has_ackd:
             logging.warning("Device hasn't acknowledged")
         return has_ackd
@@ -120,7 +122,7 @@ def main(fifo_path: str, show: bool, toggle_animation: bool, stop_animation: boo
         fd = fifo.fileno()
         os.set_blocking(fd, True)
 
-        handler = ProtocolHandler(fifo)
+        handler = ProtocolHandler(fifo, fd)
         if clear:
             handler.clear()
         elif toggle_animation:
