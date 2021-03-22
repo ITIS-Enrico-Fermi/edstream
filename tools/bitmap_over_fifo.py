@@ -13,6 +13,7 @@ from enum import IntEnum, auto
 from time import sleep
 from typing import BinaryIO
 import os
+import time
 
 
 class BytePosition(IntEnum):
@@ -72,6 +73,7 @@ class ProtocolHandler:
         Check if the embedded device acknowledged start or stop byte
         ACK byte: 0xff
         """
+        time.sleep(0.05)
         return (self.fifo.read(1) == b'\xff')
 
     def send_bitmap(self, buf: bytes) -> None:
@@ -81,7 +83,7 @@ class ProtocolHandler:
         """
         self.__send_start_byte(zipped = False, save = True, size_128x64 = True)
         assert self.__check_ack()
-        # print(len(buf))
+        self.fifo.write(bytes(10))  # Wake up fifo.read() in uart_manager
         self.fifo.write(buf)  # buf's length must be 1024 bytes
         assert self.__check_ack()
 
