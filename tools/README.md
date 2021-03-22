@@ -33,8 +33,13 @@ Send an image to the embedded device
 ```
 cat image.png | python3 to_bitmap.py | python3 rotate_pixel.py | python3 bitmap_over_fifo.py
 ```
+Send a video clip to the ed
+```
+chmod +x from_video.sh
+./from_video.sh rick_astley.mp4 50 99
+```
 
-Show the image with
+Show the image or the video clip with
 ```
 python3 bitmap_over_fifo.py --toggle-animation
 ```
