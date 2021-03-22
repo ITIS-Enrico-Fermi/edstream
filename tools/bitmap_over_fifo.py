@@ -74,8 +74,8 @@ class ProtocolHandler:
         Check if the embedded device acknowledged start or stop byte
         ACK byte: 0xff
         """
-        time.sleep(0.05)
-        has_ackd = (self.serial_port.read() == b'\xff')
+        time.sleep(0.1)
+        has_ackd = (self.fifo.read(1) == b'\xff')
         if not has_ackd:
             logging.warning("Device hasn't acknowledged")
         return has_ackd
