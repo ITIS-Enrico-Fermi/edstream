@@ -47,6 +47,18 @@ The same command can be used to stop the animation (hide the image) and clear th
 
 If needed, set your device serial port with -p option in `uart_proxy.py` script
 
+### MQTT
+
+Open `daemon.py` and attach it to the serial port. This must remain open during the entire time of connection.
+```
+python3 daemon.py -p /dev/ttyUSB0
+```
+
+Send an image through MQTT
+```
+cat image.png | python3 to_bitmap.py | python3 rotate_pixel.py | mosquitto_pub -h mqtt.ssh.edu.it -t edstream --stdin-file
+```
+
 ### Video stream
 
 WIP
