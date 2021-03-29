@@ -48,6 +48,8 @@ def main(port, broker_addr):
 
         s.flushInput()
 
+        started = False
+
         try:
             while True:
                 frame = frame_queue.get()
@@ -57,7 +59,9 @@ def main(port, broker_addr):
 
                 phandler.send_bitmap(img.tobytes())
 
-                phandler.start()
+                if not started:
+                    phandler.start()
+                    started = True
 
         except KeyboardInterrupt:
             pass
