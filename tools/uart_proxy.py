@@ -6,7 +6,6 @@ import os
 import serial
 import logging
 import argparse
-import aiofiles
 import asyncio
 from typing import BinaryIO
 from time import sleep
